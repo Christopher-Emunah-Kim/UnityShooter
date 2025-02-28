@@ -8,6 +8,10 @@ public class Enemy : MonoBehaviour
     public float speed = 2.0f;
     Vector3 dir;
     
+    //폭발처리
+    GameObject player;
+    public GameObject explosionFactory;
+    
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -37,6 +41,12 @@ public class Enemy : MonoBehaviour
     //충돌시작 처리함수
     private void OnCollisionEnter(Collision other)
     {
+        //VFX생성
+        GameObject explosion = Instantiate(explosionFactory);
+        
+        //VFX위치 지정
+        explosion.transform.position = transform.position;
+        
         Destroy(other.gameObject); //상대 제거
         Destroy(gameObject); //나 제거
     }
