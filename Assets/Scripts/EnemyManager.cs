@@ -15,13 +15,29 @@ public class EnemyManager : MonoBehaviour
     //적 공장
     public GameObject enemyFactory;
     
+    //오브젝트풀 관련
+    public int poolSize = 10; //크기
+    private GameObject[] enemyObjectPool; //오브젝트 풀배열 
+    public Transform[] spawnPoints; //SpawnPoint 배열
+    
+    
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         //태어날때 생성시간 결정
         createTime = Random.Range(minTime, maxTime);
+        
+        //오브젝트 풀을 에너미 크기만큼 생성
+        enemyObjectPool = new GameObject[poolSize];
+        for (int i = 0; i < poolSize; i++)
+        {
+            GameObject enemy = Instantiate(enemyFactory);
+            enemyObjectPool[i] = enemy;
+            enemy.SetActive(false); //처음엔 비활성화
+        }
     }
-
+    
+    
     // Update is called once per frame
     void Update()
     {
@@ -29,10 +45,24 @@ public class EnemyManager : MonoBehaviour
         currentTime += Time.deltaTime;
         if (currentTime > createTime)
         {
-            GameObject enemy = Instantiate(enemyFactory);
-            enemy.transform.position = transform.position; 
+            //에너미풀 안의 에너미들 중
+            for (int i = 0; i < poolSize; i++)
+            {
+                GameObject enemy = enemyObjectPool[i];
+                if (enemy.activeSelf == false)
+                {
+                    //enemy.transform.position = transform.position;
+                    enemy.SetActive(true);
+                    //스폰포인트 랜덤으로선택해 에너미 위치시키기
+                    int index = Random.Range(0, spawnPoints.Length);
+                    enemy.transform.position = spawnPoints[index].position;
+                    
+                    break;
+                }
+            }
+            
+            createTime = Random.Range(minTime, maxTime);
             currentTime = 0;
-            createTime = Random.Range(minTime, maxTime); //생성시간 재설정
         }
     }
 }

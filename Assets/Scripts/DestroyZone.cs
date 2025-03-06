@@ -17,7 +17,11 @@ public class DestroyZone : MonoBehaviour
     //충돌감지함수
     private void OnTriggerEnter(Collider other)
     {
-        Destroy(other.gameObject);
+        //부딪친게 Enemy나 Bullet이면
+        if (other.gameObject.name.Contains("Bullet") || other.gameObject.name.Contains("Enemy"))
+        {
+            other.gameObject.SetActive(false); //비활성화
+        }
     }
     
     

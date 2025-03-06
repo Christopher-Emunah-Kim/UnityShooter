@@ -15,6 +15,10 @@ public class Enemy : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+    }
+
+    void onEnable()
+    {
         //30%확률로 플레이어 방향으로 출발하도록 하기
         int randValue = UnityEngine.Random.Range(0, 10);
         if (randValue < 3)
@@ -28,7 +32,6 @@ public class Enemy : MonoBehaviour
         {
             dir = Vector3.down;
         }
-        
     }
 
     // Update is called once per frame
@@ -41,13 +44,27 @@ public class Enemy : MonoBehaviour
     //충돌시작 처리함수
     private void OnCollisionEnter(Collision other)
     {
+        //에너미가 잡힐때마다 현재 점수를 카운트하고싶다.
+        ScoreManager.Instance.Score++;
+
         //VFX생성
         GameObject explosion = Instantiate(explosionFactory);
         
         //VFX위치 지정
         explosion.transform.position = transform.position;
         
-        Destroy(other.gameObject); //상대 제거
-        Destroy(gameObject); //나 제거
+        //(other.gameObject); //상대 제거
+        //bullet은 비활성화하고 나머진 제거
+        if (other.gameObject.name.Contains("Bullet"))
+        {
+            other.gameObject.SetActive(false);
+        }
+        else
+        {
+            Destroy(other.gameObject);
+        }
+        
+        //Destroy(gameObject); //나 제거
+        gameObject.SetActive(false); //나 비활성화
     }
 }
