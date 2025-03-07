@@ -17,7 +17,7 @@ public class Enemy : MonoBehaviour
     {
     }
 
-    void onEnable()
+    void OnEnable()
     {
         //30%확률로 플레이어 방향으로 출발하도록 하기
         int randValue = UnityEngine.Random.Range(0, 10);
@@ -56,8 +56,12 @@ public class Enemy : MonoBehaviour
         //(other.gameObject); //상대 제거
         //bullet은 비활성화하고 나머진 제거
         if (other.gameObject.name.Contains("Bullet"))
+        //if (other.gameObject.CompareTag("Bullet"))
         {
             other.gameObject.SetActive(false);
+            //PlayerFire 클래스 얻어와서 리스트에 삽입
+            PlayerFire playerFire = GameObject.Find("Player").GetComponent<PlayerFire>();
+            playerFire.bulletObjectPool.Add(other.gameObject);
         }
         else
         {
@@ -66,5 +70,10 @@ public class Enemy : MonoBehaviour
         
         //Destroy(gameObject); //나 제거
         gameObject.SetActive(false); //나 비활성화
+        
+        //에너미 풀에 다시 돌려보내기
+        GameObject emObject = GameObject.Find("EnemyManager");
+        EnemyManager manager = emObject.GetComponent<EnemyManager>();
+        manager.enemyObjectPool.Add(gameObject);
     }
 }

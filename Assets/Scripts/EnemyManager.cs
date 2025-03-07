@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
 
@@ -17,7 +18,7 @@ public class EnemyManager : MonoBehaviour
     
     //오브젝트풀 관련
     public int poolSize = 10; //크기
-    private GameObject[] enemyObjectPool; //오브젝트 풀배열 
+    public List<GameObject> enemyObjectPool; //오브젝트 풀배열
     public Transform[] spawnPoints; //SpawnPoint 배열
     
     
@@ -28,11 +29,16 @@ public class EnemyManager : MonoBehaviour
         createTime = Random.Range(minTime, maxTime);
         
         //오브젝트 풀을 에너미 크기만큼 생성
-        enemyObjectPool = new GameObject[poolSize];
+        enemyObjectPool = new List<GameObject>();
         for (int i = 0; i < poolSize; i++)
         {
             GameObject enemy = Instantiate(enemyFactory);
-            enemyObjectPool[i] = enemy;
+            
+            // Rigidbody rb = enemy.GetComponent<Rigidbody>();
+            // if(rb != null)
+            //         rb.isKinematic = true;
+            
+            enemyObjectPool.Add(enemy);
             enemy.SetActive(false); //처음엔 비활성화
         }
     }
@@ -45,20 +51,24 @@ public class EnemyManager : MonoBehaviour
         currentTime += Time.deltaTime;
         if (currentTime > createTime)
         {
-            //에너미풀 안의 에너미들 중
-            for (int i = 0; i < poolSize; i++)
+            //오브젝트 풀에 에너미가 있다면
+            if (enemyObjectPool.Count > 0)
             {
-                GameObject enemy = enemyObjectPool[i];
-                if (enemy.activeSelf == false)
-                {
-                    //enemy.transform.position = transform.position;
-                    enemy.SetActive(true);
-                    //스폰포인트 랜덤으로선택해 에너미 위치시키기
-                    int index = Random.Range(0, spawnPoints.Length);
-                    enemy.transform.position = spawnPoints[index].position;
-                    
-                    break;
-                }
+                //오브젝트 풀에서 enemy를 가져다 쓰고
+                GameObject enemy = enemyObjectPool[0];
+                //오브젝트 풀에서 제거
+                enemyObjectPool.Remove(enemy);
+                //랜덤으로 인덱스 선택해서 스폰포인트에 위치
+                int index = Random.Range(0, spawnPoints.Length);
+                enemy.transform.position = spawnPoints[index].position;
+                enemy.SetActive(true);
+                
+                // Rigidbody rb = enemy.GetComponent<Rigidbody>();
+                // if (rb != null)
+                // {
+                //     rb.isKinematic = false;
+                //     rb.WakeUp();
+                // }
             }
             
             createTime = Random.Range(minTime, maxTime);
